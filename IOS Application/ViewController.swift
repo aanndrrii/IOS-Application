@@ -13,6 +13,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var loginButton: UIButton!
+    @IBOutlet weak var forgotPasswordButton: UIButton!
+    @IBOutlet weak var showHideButton: UIButton!
     
     let validation = Validation()
     var correctEmail = false
@@ -24,20 +26,31 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
         emailTextField.delegate = self
         passwordTextField.delegate = self
+        
         loginButton.layer.cornerRadius = 5
+        forgotPasswordButton.layer.cornerRadius = 5
+        showHideButton.layer.cornerRadius = 5
+        
+        emailTextField.layer.borderWidth = 0.5
+        emailTextField.layer.cornerRadius = 5
+        emailTextField.layer.borderColor = UIColor.white.cgColor
+        passwordTextField.layer.borderWidth = 0.5
+        passwordTextField.layer.cornerRadius = 5
+        passwordTextField.layer.borderColor = UIColor.white.cgColor
+        
+        loginButton.isHidden = true
+        forgotPasswordButton.isHidden = true
+        showHideButton.isHidden = true
+        passwordTextField.isHidden = true
         
     }
     
     func textFieldDidBeginEditing(_ textField: UITextField) {
         switch textField {
         case emailTextField:
-            emailTextField.layer.borderWidth = 0.5
             emailTextField.layer.borderColor = UIColor.blue.cgColor
-            emailTextField.layer.cornerRadius = 5
         case passwordTextField:
-            passwordTextField.layer.borderWidth = 0.5
             passwordTextField.layer.borderColor = UIColor.blue.cgColor
-            passwordTextField.layer.cornerRadius = 5
         default:
             return
         }
@@ -61,41 +74,29 @@ class ViewController: UIViewController, UITextFieldDelegate {
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        
         switch textField {
         case emailTextField:
             if validation.validateEmail(email: emailTextField.text ?? "") {
                 correctEmail = true
-                emailTextField.layer.borderWidth = 0.5
                 emailTextField.layer.borderColor = UIColor.green.cgColor
-                emailTextField.layer.cornerRadius = 5
                 passwordTextField.becomeFirstResponder()
             }
             else {
                 correctEmail = false
-                emailTextField.layer.borderWidth = 0.5
                 emailTextField.layer.borderColor = UIColor.red.cgColor
-                emailTextField.layer.cornerRadius = 5
             }
         case passwordTextField:
             if validation.validatePassword(password: passwordTextField.text ?? "") {
                 correctPassword = true
-                passwordTextField.layer.borderWidth = 0.5
                 passwordTextField.layer.borderColor = UIColor.green.cgColor
-                passwordTextField.layer.cornerRadius = 5
                 passwordTextField.resignFirstResponder()
             }
             else {
                 correctPassword = false
-                passwordTextField.layer.borderWidth = 0.5
                 passwordTextField.layer.borderColor = UIColor.red.cgColor
-                passwordTextField.layer.cornerRadius = 5
             }
         default:
             passwordTextField.resignFirstResponder()
-        }
-        if correctEmail && correctPassword {
-            loginButton.isEnabled = true
         }
         
         return true
@@ -105,6 +106,59 @@ class ViewController: UIViewController, UITextFieldDelegate {
         
     }
     
-
+    @IBAction func showHideButtonDidTap(_ sender: UIButton) {
+        if passwordTextField.isSecureTextEntry {
+            showHideButton.setTitle("Hide", for: .normal)
+            passwordTextField.isSecureTextEntry = false
+        } else {
+            showHideButton.setTitle("Show", for: .normal)
+            passwordTextField.isSecureTextEntry = true
+        }
+    }
+    
+    
+    @IBAction func textFieldEditingDidChange(_ sender: UITextField) {
+        
+        if (sender.text ?? "").count < 5 {
+            return
+        }
+        
+        switch sender {
+        case emailTextField:
+            if validation.validateEmail(email: emailTextField.text ?? "") {
+                correctEmail = true
+                emailTextField.layer.borderColor = UIColor.green.cgColor
+                passwordTextField.isHidden = false
+                forgotPasswordButton.isHidden = false
+                showHideButton.isHidden = false
+                loginButton.isHidden = false
+            }
+            else {
+                correctEmail = false
+                emailTextField.layer.borderColor = UIColor.red.cgColor
+                passwordTextField.isHidden = true
+                forgotPasswordButton.isHidden = true
+                showHideButton.isHidden = true
+                loginButton.isHidden = true
+            }
+        case passwordTextField:
+            if validation.validatePassword(password: passwordTextField.text ?? "") {
+                correctPassword = true
+                passwordTextField.layer.borderColor = UIColor.green.cgColor
+            }
+            else {
+                correctPassword = false
+                passwordTextField.layer.borderColor = UIColor.red.cgColor
+            }
+        default:
+            return
+        }
+        
+        if correctEmail && correctPassword {
+            loginButton.isEnabled = true
+        } else {
+            loginButton.isEnabled = false
+        }
+    }
 }
 

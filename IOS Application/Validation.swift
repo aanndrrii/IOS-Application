@@ -36,7 +36,7 @@ class Validation {
             if array[i] == emailCharacter2 {
                 character2Exists = true
                 
-                if i+2<=email.count{
+                if i+2<email.count{
                     twoCharactersAfterDot = true
                 }
             }
